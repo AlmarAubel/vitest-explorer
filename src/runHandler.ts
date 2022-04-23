@@ -17,6 +17,7 @@ import { getConfig } from "./config";
 import { readFile } from "fs-extra";
 import { existsSync } from "fs";
 import { isWindows } from "./pure/platform";
+import { DebugConfiguration } from "vscode";
 
 export async function runHandler(
   ctrl: vscode.TestController,
@@ -125,7 +126,7 @@ async function runTest(
       let windowsPath = file.uri!.fsPath.replace(/\\/g, "/");
       // vscode sends path with lowercase for drive, but tests report with uppercase
       // so there are no matches unless this is adjusted
-      windowsPath = windowsPath.charAt(0).toUpperCase() + windowsPath.slice(1);
+      if(!isDebug) {windowsPath = windowsPath.charAt(0).toUpperCase() + windowsPath.slice(1);}  
       pathToFile.set(windowsPath, file);
     }
   }
@@ -234,7 +235,7 @@ async function debugTest(
     skipFiles: ["<node_internals>/**", "**/node_modules/**"],
     program: getVitestPath(workspaceFolder.uri.fsPath),
     args: [] as string[],
-    smartStep: true,
+    smartStep: true,    
   };
 
   const outputFilePath = getTempPath();
